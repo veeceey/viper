@@ -2462,7 +2462,12 @@ func TestWatchFile(t *testing.T) {
 		wg.Wait()
 		// then the config value should have changed
 		require.NoError(t, err)
-		assert.Equal(t, "baz", v.Get("foo"))
+		// On Windows, fsnotify may deliver the event before the file write is fully
+		// flushed, causing ReadInConfig to read stale content. Poll briefly to allow
+		// a subsequent event (or re-read) to pick up the new value.
+		assert.Eventually(t, func() bool {
+			return v.Get("foo") == "baz"
+		}, 5*time.Second, 10*time.Millisecond, "expected foo to be \"baz\"")
 	})
 
 	t.Run("link to real file changed (à la Kubernetes)", func(t *testing.T) {
