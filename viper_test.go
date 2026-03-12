@@ -1825,7 +1825,7 @@ func TestWriteConfig(t *testing.T) {
 		"json with file extension and mismatch type": {
 			configName:      "c",
 			inConfigType:    "json",
-			outConfigType:   "hcl",
+			outConfigType:   "toml",
 			fileName:        "c.json",
 			input:           jsonExample,
 			expectedContent: jsonWriteExpected,
